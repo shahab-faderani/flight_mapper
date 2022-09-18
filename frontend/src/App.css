@@ -36,6 +36,10 @@ html {
   height: 36px;
 }
 
+.hidden{
+  display: none;
+}
+
 .flight-plan-stop{
   background-image: url(drone.png);
   background-size: cover;
@@ -64,11 +68,13 @@ html {
   border: solid 6px rgba(28, 48, 48, 0.5);
 }
 
+.title{
+  align-self: center;
+  font-size: 6mm;
+}
+
 .flightPlannerWrapper 
-  .title{
-    align-self: center;
-    font-size: 8mm;
-  }
+  
   .seprator{
     display: flex;
     flex-direction:row;
@@ -77,26 +83,63 @@ html {
     border: solid 2px rgba(28, 48, 48, 0.5);
     width: 90%;
   }
-  .region{
-    font-size: 4mm;
-    justify-content: space-evenly;
-    display: flex;
+  .content{
+    justify-content: space-around;
+    display: inline-flex;
     flex-direction:row;
+    width: 100%;
+  
+    
+   
   } 
   .longitude{
     font-family: 'Courier New';
     font-weight: bolder;
+    align-self: center;
     background-color: white;
     text-align: center;
     height: 16px;
-    width: 28%;
+    width: 30%;
+    border: solid 2px rgba(28, 48, 48, 0.5);
     
   }
   .latitude{
     font-family: 'Courier New';
     font-weight: bolder;
+    align-self: center;
     background-color: white;
     text-align: center;
     height: 16px;
-    width: 28%;
+    width: 30%;
+    border: solid 2px rgba(28, 48, 48, 0.5);
   }
+
+  .planID{
+    font-family: 'Courier New';
+    font-weight: bolder;
+    align-self: center;
+    background-color: white;
+    text-align: center;
+    height: 16px;
+    width: 160px;
+    border: solid 2px rgba(28, 48, 48, 0.5);
+  }
+
+  .button{
+    height: 30px;
+    width: 70px;
+    margin-top: 8px;
+    border: solid 2px rgba(28, 48, 48, 0.5);
+    border-radius: 10px;
+    font-family: 'Courier New';
+    font-weight: bolder;
+    text-align: center;
+    font-size: 4mm;  
+  }
+  .button.active{
+    color: green;
+  }
+  .content 
+    .title{
+      font-size: 4mm;
+    }

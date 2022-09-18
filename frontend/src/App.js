@@ -10,9 +10,13 @@ const App = () => {
   //an arbitrary pair of coordinates, i.e. Berlin's
   const [longitude, setLongitude] = useState(13.40495463)
   const [latitude, setLatitude] = useState(52.52000872)
-
+  const [planID, setPlanID] = useState("")
+  const [plansVisibility, switchPlansVisibility] = useState(false)
+  
+ 
 
   const addFlightPlanStop = (lngLat, map, stops) => {
+
 
     const stopPopupOffset = {
       bottom: [0, -25]
@@ -65,7 +69,6 @@ const App = () => {
     }
   }
   
-
   useEffect (() => {
     const origin = {
       lng: longitude,
@@ -92,6 +95,7 @@ const App = () => {
     map.on('click', (e) => {
       stops.push(e.lngLat)
       addFlightPlanStop(e.lngLat, map, stops)
+      switchPlansVisibility(true)
     })
 
     map.on('dragend', (e) => {
@@ -107,25 +111,43 @@ const App = () => {
       <div className='map' ref={mapElement}/>
       <div className='flightPlannerWrapper'> 
         <h2 className='title'> Flight Planner </h2> 
-        <hr className='seprator'></hr>
-        <h3 className='region'> Principal Point 
-        <input
-        type='text'
-        id='longitude'
-        className='longitude'
-        title='Longitude'
-        placeholder={longitude}
-        onChange={(e) => {setLongitude(e.target.value)}}
-      /> 
-        <input
-        type='text'
-        id='latitude'
-        className='latitude'
-        title='Latitude'
-        placeholder={latitude}
-        onChange={(e) => {setLatitude(e.target.value)}}
-      />
-      </h3> 
+        <div className='contentWrapper'>
+          <hr className='seprator'></hr>
+          <div className='content region'>
+            <h3 className='title'>Principal Point</h3>  
+            <div
+              className='longitude'
+              title='Longitude'
+            > 
+            {longitude} </div> 
+            <div
+              className='latitude'
+              title='Latitude'
+            >
+            {latitude} </div> 
+          </div>
+        </div>
+        <div className= {'contentWrapper' + (!plansVisibility ? " hidden" : "") }>
+          <hr className='seprator'></hr>
+          <div className='content plans'>
+            <h3 className='title'>Plan {planID ? "#" + planID + " :" : ""}</h3>
+            <input
+              type='text'
+              className='planID'
+              placeholder={'Please Insert an ID'}
+              onChange={(e) => {setPlanID(e.target.value)}}
+            />
+            <button 
+            className='button save'
+            title='save'
+            disabled={planID != "" ? false : true}
+            onClick={(e) => {
+              e.target.className += " active"
+              e.target.disabled = true
+            }}
+            >save</button>
+          </div>
+        </div>
       </div>
       
     </div>}
