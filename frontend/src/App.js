@@ -12,7 +12,7 @@ const App = () => {
   const [latitude, setLatitude] = useState(52.52000872)
 
 
-  const addFlightPlanStop = (lngLat, map) => {
+  const addFlightPlanStop = (lngLat, map, stops) => {
 
     const stopPopupOffset = {
       bottom: [0, -25]
@@ -25,10 +25,44 @@ const App = () => {
     const stop = new tt.Marker({
       element: element
     })
+    
+
     .setLngLat(lngLat)
     .addTo(map)
 
     stop.setPopup(popup).togglePopup()
+
+    if (stops.length > 1){
+      const routeID = 'route-'+stops.length
+      map.addSource(routeID, {
+        'type': 'geojson',
+        'data': {
+            'type': 'Feature',
+            'properties': {},
+            'geometry': {
+                'type': 'LineString',
+                'coordinates': [
+                    [stops[stops.length -2].lng , stops[stops.length -2].lat],
+                    [stops[stops.length -1].lng , stops[stops.length -1].lat]
+                ]
+            }
+        }
+      });
+      map.addLayer({
+          'id': routeID,
+          'type': 'line',
+          'source': routeID,
+          'layout': {
+              'line-join': 'round',
+              'line-cap': 'round'
+          },
+          'paint': {
+              'line-color': '#1C3030',
+              'line-width': 4,
+              'line-opacity': 0.5,
+          }
+      });
+    }
   }
   
 
@@ -57,7 +91,7 @@ const App = () => {
     
     map.on('click', (e) => {
       stops.push(e.lngLat)
-      addFlightPlanStop(e.lngLat, map)
+      addFlightPlanStop(e.lngLat, map, stops)
     })
 
     map.on('dragend', (e) => {
@@ -93,6 +127,7 @@ const App = () => {
       />
       </h3> 
       </div>
+      
     </div>}
     </>
   )
