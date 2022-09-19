@@ -32,6 +32,7 @@ html {
   border-radius: 10px !important;
   font-family: 'Courier New';
   font-weight: bolder;
+  text-align: center;
   border: solid 4px rgba(28, 48, 48, 0.5);
   height: 36px;
 }
@@ -99,7 +100,7 @@ html {
     background-color: white;
     text-align: center;
     height: 16px;
-    width: 30%;
+    width: 25%;
     border: solid 2px rgba(28, 48, 48, 0.5);
     
   }
@@ -110,7 +111,7 @@ html {
     background-color: white;
     text-align: center;
     height: 16px;
-    width: 30%;
+    width: 25%;
     border: solid 2px rgba(28, 48, 48, 0.5);
   }
 

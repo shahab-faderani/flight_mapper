@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import './App.css'
 import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import * as tt from '@tomtom-international/web-sdk-maps'
+import FlightRoutesList from "./FlightRoutesList";
 
 const App = () => {
   const mapElement = useRef()
@@ -10,18 +11,21 @@ const App = () => {
   //an arbitrary pair of coordinates, i.e. Berlin's
   const [longitude, setLongitude] = useState(13.40495463)
   const [latitude, setLatitude] = useState(52.52000872)
-  const [planID, setPlanID] = useState("")
-  const [plansVisibility, switchPlansVisibility] = useState(false)
-  
- 
 
+  //the plans information ideally is stored to and retrieved from the backend:
+  const [flightRoutes, setFlightRoute] = useState([])
+  let currentRouteID = 1
+
+
+  const [selectedRoute, setSelectedRoute] = useState({})
+  const [plansVisibility, switchPlansVisibility] = useState(false)
   const addFlightPlanStop = (lngLat, map, stops) => {
 
 
     const stopPopupOffset = {
       bottom: [0, -25]
     }
-    const popoupText = String(lngLat.lng.toFixed(6)) + '<br>' + String(lngLat.lat.toFixed(6))
+    const popoupText = 'Route' + '<br>' + currentRouteID
     const popup = new tt.Popup({offset: stopPopupOffset}).setHTML(popoupText)
       
     const element = document.createElement('div')
@@ -37,8 +41,8 @@ const App = () => {
     stop.setPopup(popup).togglePopup()
 
     if (stops.length > 1){
-      const routeID = 'route-'+stops.length
-      map.addSource(routeID, {
+      const edgeID = 'edge-'+ currentRouteID + '-' + stops.length
+      map.addSource(edgeID, {
         'type': 'geojson',
         'data': {
             'type': 'Feature',
@@ -53,9 +57,9 @@ const App = () => {
         }
       });
       map.addLayer({
-          'id': routeID,
+          'id': edgeID,
           'type': 'line',
-          'source': routeID,
+          'source': edgeID,
           'layout': {
               'line-join': 'round',
               'line-cap': 'round'
@@ -66,6 +70,7 @@ const App = () => {
               'line-opacity': 0.5,
           }
       });
+    
     }
   }
   
@@ -74,7 +79,7 @@ const App = () => {
       lng: longitude,
       lat: latitude
     }
-    const stops = []
+    let stops = []
 
     let map = tt.map({
       //ideally keys are handled with higher security measures, i.e. as environmental variables/secrets
@@ -87,16 +92,39 @@ const App = () => {
 
     setMap(map)
 
-   
-  
-
-    
-    
+    let clicks = 0
     map.on('click', (e) => {
-      stops.push(e.lngLat)
-      addFlightPlanStop(e.lngLat, map, stops)
-      switchPlansVisibility(true)
+      //no route can be selected in edit mode
+      setSelectedRoute({})
+      clicks ++
+      setTimeout(()=>{
+        if (clicks ===  1){
+          stops.push(e.lngLat)
+          addFlightPlanStop(e.lngLat, map, stops)
+          clicks = 0
+        } else {
+          clicks = 0
+        }
+      },300)
     })
+
+    map.on('dblclick', () => {
+      switchPlansVisibility(true)
+      clicks = 0
+      if (stops.length > 1){
+        const route = {
+          ID: currentRouteID,
+          stops: stops
+        }
+        let routes_temp = flightRoutes
+        routes_temp.push(route)
+        setFlightRoute(routes_temp)
+        console.log(flightRoutes)
+        currentRouteID = currentRouteID +1
+        stops = []
+        setSelectedRoute(route)
+      }
+    }) 
 
     map.on('dragend', (e) => {
       setLatitude((e.target.transform._center.lat).toFixed(8))
@@ -129,24 +157,9 @@ const App = () => {
         </div>
         <div className= {'contentWrapper' + (!plansVisibility ? " hidden" : "") }>
           <hr className='seprator'></hr>
-          <div className='content plans'>
-            <h3 className='title'>Plan {planID ? "#" + planID + " :" : ""}</h3>
-            <input
-              type='text'
-              className='planID'
-              placeholder={'Please Insert an ID'}
-              onChange={(e) => {setPlanID(e.target.value)}}
-            />
-            <button 
-            className='button save'
-            title='save'
-            disabled={planID != "" ? false : true}
-            onClick={(e) => {
-              e.target.className += " active"
-              e.target.disabled = true
-            }}
-            >save</button>
-          </div>
+          <FlightRoutesList
+            flightRoutes={flightRoutes}
+          />
         </div>
       </div>
       
