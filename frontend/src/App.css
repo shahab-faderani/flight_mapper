@@ -18,8 +18,10 @@ html {
 }
 
 .map{
-  height: 96vh;
-  width: 98%;
+  height: 94vh;
+  width: 100%;
+  margin-left: 24px;
+  margin-right: 24px;
   border-radius: 30px;
   border: solid 6px rgba(28, 48, 48, 0.5);
   
@@ -68,8 +70,10 @@ html {
   flex-direction: column;
   position: absolute;
   top: 8px;
-  left: 16px;
+  left: 0px;
+  margin-left: 32px;
   width: 420px;
+  max-height: 94vh;
   background-color: yellow;
   opacity: 0.7;
   font-family: system-ui;
