@@ -1,8 +1,9 @@
 import { useRef, useEffect, useState } from 'react';
 import './App.css'
+import FlightRoutesList from "./FlightRoutesList";
 import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import * as tt from '@tomtom-international/web-sdk-maps'
-import FlightRoutesList from "./FlightRoutesList";
+
 
 const App = () => {
   const mapElement = useRef()
@@ -12,34 +13,40 @@ const App = () => {
   const [longitude, setLongitude] = useState(13.40495463)
   const [latitude, setLatitude] = useState(52.52000872)
 
-  //the plans information ideally is stored to and retrieved from the backend:
+  //the plans information (routes and their corresponding IDs) ideally are stored on and retrieved from the backend.
+  //here however as mentioned in the assignment sheet they are store in the frontend:
   const [flightRoutes, setFlightRoute] = useState([])
   let currentRouteID = 1
 
-
-  const [selectedRoute, setSelectedRoute] = useState({})
+  const [activeRoute, initiateRoute] = useState({})
+  const [loadedRoute, loadRoute] = useState({})
   const [plansVisibility, switchPlansVisibility] = useState(false)
-  const addFlightPlanStop = (lngLat, map, stops) => {
 
-
-    const stopPopupOffset = {
-      bottom: [0, -25]
+  const loadFlightRoute = (routeID) => {
+    for (let i = 0; i < flightRoutes.length; i++) {
+      if (flightRoutes[i].ID == routeID){
+        loadRoute(flightRoutes[i])
+        const pre_route_stops = document.getElementsByClassName('flight-plan-stop ' + loadedRoute.ID)
+        for (let j = 0; j < pre_route_stops.length; j++) {
+          pre_route_stops[j].classList.remove("selected")
+        }
+        const route_stops = document.getElementsByClassName('flight-plan-stop ' + routeID)
+        for (let k = 0; k < route_stops.length; k++) {
+          route_stops[k].classList.add("selected")
+        }
+      }
     }
-    const popoupText = 'Route' + '<br>' + currentRouteID
-    const popup = new tt.Popup({offset: stopPopupOffset}).setHTML(popoupText)
+  }
+
+  const addFlightRouteStop = (lngLat, map, stops, route_ID) => {
       
-    const element = document.createElement('div')
-    element.className = 'flight-plan-stop'
-    const stop = new tt.Marker({
-      element: element
+    const stop_element = document.createElement('div')
+    stop_element.className = 'flight-plan-stop ' + route_ID
+    new tt.Marker({
+      element: stop_element
     })
-    
-
-    .setLngLat(lngLat)
-    .addTo(map)
-
-    stop.setPopup(popup).togglePopup()
-
+      .setLngLat(lngLat)
+      .addTo(map)
     if (stops.length > 1){
       const edgeID = 'edge-'+ currentRouteID + '-' + stops.length
       map.addSource(edgeID, {
@@ -70,17 +77,11 @@ const App = () => {
               'line-opacity': 0.5,
           }
       });
-    
     }
   }
   
   useEffect (() => {
-    const origin = {
-      lng: longitude,
-      lat: latitude
-    }
     let stops = []
-
     let map = tt.map({
       //ideally keys are handled with higher security measures, i.e. as environmental variables/secrets
       //for simplicity I have written it as a string:
@@ -92,15 +93,15 @@ const App = () => {
 
     setMap(map)
 
+    // a timeout has been implemented to differentiate between single and double clicks
     let clicks = 0
     map.on('click', (e) => {
-      //no route can be selected in edit mode
-      setSelectedRoute({})
+      initiateRoute({})
       clicks ++
       setTimeout(()=>{
         if (clicks ===  1){
           stops.push(e.lngLat)
-          addFlightPlanStop(e.lngLat, map, stops)
+          addFlightRouteStop(e.lngLat, map, stops, currentRouteID)
           clicks = 0
         } else {
           clicks = 0
@@ -109,9 +110,9 @@ const App = () => {
     })
 
     map.on('dblclick', () => {
-      switchPlansVisibility(true)
       clicks = 0
       if (stops.length > 1){
+        switchPlansVisibility(true)
         const route = {
           ID: currentRouteID,
           stops: stops
@@ -119,10 +120,9 @@ const App = () => {
         let routes_temp = flightRoutes
         routes_temp.push(route)
         setFlightRoute(routes_temp)
-        console.log(flightRoutes)
         currentRouteID = currentRouteID +1
         stops = []
-        setSelectedRoute(route)
+        initiateRoute(route)
       }
     }) 
 
@@ -133,37 +133,32 @@ const App = () => {
 
     return () => map.remove()
   }, [])
+
   return (
     <>
-    {map && <div className='app'>
-      <div className='map' ref={mapElement}/>
-      <div className='flightPlannerWrapper'> 
-        <h2 className='title'> Flight Planner </h2> 
-        <div className='contentWrapper'>
-          <hr className='seprator'></hr>
-          <div className='content region'>
-            <h3 className='title'>Principal Point</h3>  
-            <div
-              className='longitude'
-              title='Longitude'
-            > 
-            {longitude} </div> 
-            <div
-              className='latitude'
-              title='Latitude'
-            >
-            {latitude} </div> 
+      {map && <div className='app'>
+        <div className='map' ref={mapElement}/>
+        <div className='flightPlannerWrapper'> 
+          <h2 className='title'> Flight Planner </h2> 
+          <div className='contentWrapper'>
+            <hr className='separator'></hr>
+            <div className='content region'>
+              <h3 className='title'>Principal Point</h3>  
+              <div className='longitude' title='Longitude'> {longitude} </div> 
+              <div className='latitude' title='Latitude'> {latitude} </div> 
+            </div>
+          </div>
+          <div className= {'contentWrapper' + (!plansVisibility ? " hidden" : "") }>
+            <hr className='separator'></hr>
+            <FlightRoutesList
+              flightRoutes={flightRoutes}
+              loadFlightRoute={loadFlightRoute}
+              loadedRoute={loadedRoute}
+            />
           </div>
         </div>
-        <div className= {'contentWrapper' + (!plansVisibility ? " hidden" : "") }>
-          <hr className='seprator'></hr>
-          <FlightRoutesList
-            flightRoutes={flightRoutes}
-          />
-        </div>
       </div>
-      
-    </div>}
+      }
     </>
   )
 }

@@ -24,11 +24,13 @@ html {
   border: solid 6px rgba(28, 48, 48, 0.5);
   
 }
+
 .mapboxgl-popup-tip{
   border-top-color:rgba(34, 54, 54, 0.5) !important;
 }
+
 .mapboxgl-popup-content{
-  background: yellow !important;
+  background: greenyellow !important;
   border-radius: 10px !important;
   font-family: 'Courier New';
   font-weight: bolder;
@@ -38,7 +40,9 @@ html {
 }
 
 .hidden{
+  visibility: hidden;
   display: none;
+  opacity: 0;
 }
 
 .flight-plan-stop{
@@ -51,8 +55,15 @@ html {
   border: solid 3px rgba(28, 48, 48, 0.5)
 }
 
-.flightPlannerWrapper
-{
+.flight-plan-stop.selected{
+  background-color: greenyellow;
+  transition: 0.5s ease-out;
+  transition-property: width, height;
+  width: 30px;
+  height: 30px;
+}
+
+.flightPlannerWrapper{
   display: flex;
   flex-direction: column;
   align-items: left;
@@ -61,7 +72,6 @@ html {
   top: 8px;
   left: 16px;
   width: 420px;
-  height: auto;
   background-color: yellow;
   opacity: 0.7;
   font-family: system-ui;
@@ -75,8 +85,7 @@ html {
 }
 
 .flightPlannerWrapper 
-  
-  .seprator{
+  .separator{
     display: flex;
     flex-direction:row;
     justify-content: space-evenly;
@@ -84,15 +93,14 @@ html {
     border: solid 2px rgba(28, 48, 48, 0.5);
     width: 90%;
   }
+
   .content{
     justify-content: space-around;
     display: inline-flex;
     flex-direction:row;
     width: 100%;
-  
-    
-   
   } 
+
   .longitude{
     font-family: 'Courier New';
     font-weight: bolder;
@@ -102,8 +110,8 @@ html {
     height: 16px;
     width: 25%;
     border: solid 2px rgba(28, 48, 48, 0.5);
-    
   }
+
   .latitude{
     font-family: 'Courier New';
     font-weight: bolder;
@@ -137,10 +145,21 @@ html {
     text-align: center;
     font-size: 4mm;  
   }
+
   .button.active{
-    color: green;
+    transition: all 0.5s ease-out;
+    font-size: 4.5mm;
+    width: 76px;
+    height: 32px;
+    background-color: green;
   }
+
   .content 
     .title{
       font-size: 4mm;
     }
+  
+  .contentWrapper{
+    display: block;
+    transition: all 0.5s ease-out;
+  }
