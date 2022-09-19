@@ -7,11 +7,9 @@ const FlightRoutesList = ({
 }) => {
   return (flightRoutes.map((route) => {
     return (
-      <div className='content plans' key={route.ID}>
+      <div className={'content plan' + (loadedRoute.ID == route.ID ? " active" : "")}key={route.ID}>
         <h3 className='title'>Route {route.ID}</h3>
-        <button className={'button load'+ (loadedRoute.ID == route.ID ? " active" : "")} 
-          onClick={()=>{loadFlightRoute(route.ID)}}>load
-        </button>
+        <button className='button load' onClick={()=>{loadFlightRoute(route.ID)}}>load</button>
       </div>
     )
   }))

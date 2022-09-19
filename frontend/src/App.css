@@ -66,8 +66,6 @@ html {
 .flightPlannerWrapper{
   display: flex;
   flex-direction: column;
-  align-items: left;
-  justify-content: center;
   position: absolute;
   top: 8px;
   left: 16px;
@@ -86,9 +84,6 @@ html {
 
 .flightPlannerWrapper 
   .separator{
-    display: flex;
-    flex-direction:row;
-    justify-content: space-evenly;
     border-radius: 30px;
     border: solid 2px rgba(28, 48, 48, 0.5);
     width: 90%;
@@ -97,7 +92,6 @@ html {
   .content{
     justify-content: space-around;
     display: inline-flex;
-    flex-direction:row;
     width: 100%;
   } 
 
@@ -145,6 +139,22 @@ html {
     text-align: center;
     font-size: 4mm;  
   }
+
+  .plan.active > 
+    .button {
+      transition: all 0.5s ease-out;
+      font-size: 4.5mm;
+      width: 76px;
+      height: 32px;
+      background-color: green;
+    }
+
+  .plan.active > 
+    .title{
+      transition: all 0.5s ease-out;
+      font-size: 5mm;
+      margin-top: 12px;
+    }
 
   .button.active{
     transition: all 0.5s ease-out;
